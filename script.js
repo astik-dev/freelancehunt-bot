@@ -4,18 +4,12 @@ import { config } from "./config.js";
 
 
 
-const oldProjectIdsFile = "oldProjectIds.json";
-let oldProjectIds = fs.existsSync(oldProjectIdsFile) ? JSON.parse(fs.readFileSync(oldProjectIdsFile, 'utf-8')) : {};
-let newProjectIds = {};
+const lastProjectIdFile = "last-project-id.json";
+let lastProjectId = fs.existsSync(lastProjectIdFile) ? Number(fs.readFileSync(lastProjectIdFile, 'utf-8')) : undefined;
 
 const bot = new TelegramBot(config.telegram.token, {polling: true});
 
 
-
-function isNewProject(project) {
-    newProjectIds[project.id] = 1;
-    return oldProjectIds[project.id] != 1;
-}
 
 function createProjectMessage(project) {
     let message = "";
@@ -43,10 +37,14 @@ function fetchFreelancehunt() {
         .then(response => {
             
             const projects = response.data;
-            
+            const newLastProjectId = response.data[0].id;
+
+            if (!lastProjectId)
+                lastProjectId = response.data[response.data.length - 1].id - 1;
+
             projects.forEach(project => {
-                
-                if (isNewProject(project)) {
+
+                if (project.id > lastProjectId) {
                     
                     const message = createProjectMessage(project);
                     
@@ -59,9 +57,8 @@ function fetchFreelancehunt() {
                 }
             });
 
-            fs.writeFileSync(oldProjectIdsFile, JSON.stringify(newProjectIds));
-            oldProjectIds = newProjectIds;
-            newProjectIds = {};
+            fs.writeFileSync(lastProjectIdFile, `${newLastProjectId}`);
+            lastProjectId = newLastProjectId;
         })
         .catch(error => timeLog(`Error: ${error}`));
 }
