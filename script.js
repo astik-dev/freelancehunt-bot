@@ -12,13 +12,21 @@ const bot = new TelegramBot(config.telegram.token, {polling: true});
 
 
 function createProjectMessage(project) {
-    let message = "";
-    message += `<b>${project.attributes.name}</b>\n`;
-    message += project.attributes.budget ? "💵 "+project.attributes.budget.amount+" "+project.attributes.budget.currency+"\n" : "";
-    message += "\n";
-    message += project.attributes.description;
-    message += "\n\n";
-    message += project.attributes.published_at;
+    
+    const projectBudget = project.attributes.budget ? 
+        `\n💵 ${project.attributes.budget.amount} ${project.attributes.budget.currency}\n` : ``;
+    
+    const projectPublishedAt = new Date(project.attributes.published_at);
+    const projectTime = projectPublishedAt.toLocaleTimeString();
+    const projectDate = projectPublishedAt.toLocaleDateString();
+    
+    let message = `<b>💼 ${project.attributes.name}</b>\n`;
+        message += projectBudget;
+        message += "\n";
+        message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
+        message += "\n";
+        message += "📅 "+projectDate+" | "+projectTime;
+    
     return message;
 }
 
