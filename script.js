@@ -13,7 +13,7 @@ const bot = new TelegramBot(config.telegram.token, {polling: true});
 
 function createProjectMessage(project) {
     let message = "";
-    message += `<a href="${project.links.self.web}">${project.attributes.name}</a>\n`;
+    message += `<b>${project.attributes.name}</b>\n`;
     message += project.attributes.budget ? "💵 "+project.attributes.budget.amount+" "+project.attributes.budget.currency+"\n" : "";
     message += "\n";
     message += project.attributes.description;
@@ -84,7 +84,14 @@ async function checkForNewProjects() {
                 createProjectMessage(project),
                 {
                     parse_mode: 'HTML',
-                    disable_web_page_preview: true
+                    disable_web_page_preview: true,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                { text: 'Open on Freelancehunt', url: project.links.self.web }
+                            ]
+                        ]
+                    }
                 }
             );
 
