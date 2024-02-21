@@ -22,6 +22,8 @@ function createProjectMessage(project) {
         projectSkills += `#${skill.name.replace(/\s/g, '_')} `; 
     });
 
+    const projectEmployerName = `${project.attributes.employer.first_name} ${project.attributes.employer.last_name}`
+
     const projectPublishedAt = new Date(project.attributes.published_at);
     const projectTime = projectPublishedAt.toLocaleTimeString();
     const projectDate = projectPublishedAt.toLocaleDateString();
@@ -32,6 +34,7 @@ function createProjectMessage(project) {
         message += "🛠️ "+projectSkills+"\n";
         message += "\n";
         message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
+        message += `<i>👷 ${projectEmployerName}</i>\n`;
         message += "\n";
         message += "📅 "+projectDate+" | "+projectTime;
     
@@ -94,6 +97,7 @@ async function checkForNewProjects() {
         for (let i = newProjects.length - 1; i >= 0; i--) {
 
             const project = newProjects[i];
+            const projectEmployerLogin = project.attributes.employer.login;
 
             bot.sendMessage(
                 config.telegram.chatId,
@@ -105,6 +109,9 @@ async function checkForNewProjects() {
                         inline_keyboard: [
                             [
                                 { text: 'Open on Freelancehunt', url: project.links.self.web }
+                            ],
+                            [
+                                { text: `Employer (${projectEmployerLogin})`, url: `https://freelancehunt.com/employer/${projectEmployerLogin}.html` }
                             ]
                         ]
                     }
