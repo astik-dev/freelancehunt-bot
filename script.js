@@ -16,12 +16,20 @@ function createProjectMessage(project) {
     const projectBudget = project.attributes.budget ? 
         `\n💵 ${project.attributes.budget.amount} ${project.attributes.budget.currency}\n` : ``;
     
+
+    let projectSkills = "";
+    project.attributes.skills.forEach((skill) => {
+        projectSkills += `#${skill.name.replace(/\s/g, '_')} `; 
+    });
+
     const projectPublishedAt = new Date(project.attributes.published_at);
     const projectTime = projectPublishedAt.toLocaleTimeString();
     const projectDate = projectPublishedAt.toLocaleDateString();
     
     let message = `<b>💼 ${project.attributes.name}</b>\n`;
         message += projectBudget;
+        message += "\n";
+        message += "🛠️ "+projectSkills+"\n";
         message += "\n";
         message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
         message += "\n";
