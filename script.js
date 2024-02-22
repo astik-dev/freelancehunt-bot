@@ -13,18 +13,18 @@ let canCheckForNewProjects = true;
 
 
 
-function createProjectMessage(project) {
+async function createProjectMessage(project) {
     
     const projectBudget = project.attributes.budget ? 
         `\n💵 ${project.attributes.budget.amount} ${project.attributes.budget.currency}\n` : ``;
     
-
     let projectSkills = "";
     project.attributes.skills.forEach((skill) => {
-        projectSkills += `#${skill.name.replace(/\s/g, '_')} `; 
+        projectSkills += `#${skill.name.replace(/\s/g, '_')} `;
     });
 
-    const projectEmployerName = `${project.attributes.employer.first_name} ${project.attributes.employer.last_name}`
+    const projectEmployerJSON = await fetchFreelancehuntJSON(`https://api.freelancehunt.com/v2/employers/${project.attributes.employer.id}`);
+    const projectEmployer = projectEmployerJSON.data.attributes;
 
     const projectPublishedAt = new Date(project.attributes.published_at);
     const projectTime = projectPublishedAt.toLocaleTimeString();
@@ -36,7 +36,10 @@ function createProjectMessage(project) {
         message += "🛠️ "+projectSkills+"\n";
         message += "\n";
         message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
-        message += `<i>👷 ${projectEmployerName}</i>\n`;
+        message += `<code>`
+        message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name}\n`;
+        message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}`;
+        message += `</code>\n`;
         message += "\n";
         message += "📅 "+projectDate+" | "+projectTime;
     
@@ -103,7 +106,7 @@ async function checkForNewProjects() {
 
             bot.sendMessage(
                 config.telegram.chatId,
-                createProjectMessage(project),
+                await createProjectMessage(project),
                 {
                     parse_mode: 'HTML',
                     disable_web_page_preview: true,
