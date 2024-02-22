@@ -38,7 +38,8 @@ async function createProjectMessage(project) {
         message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
         message += `<code>`
         message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name}\n`;
-        message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}`;
+        message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}\n`;
+        message += `🌐 ${projectEmployer.location.country.name}`;
         message += `</code>\n`;
         message += "\n";
         message += "📅 "+projectDate+" | "+projectTime;
