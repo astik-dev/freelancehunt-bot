@@ -23,6 +23,9 @@ async function createProjectMessage(project) {
         projectSkills += `#${skill.name.replace(/\s/g, '_')} `;
     });
 
+    let projectDescription = project.attributes.description.slice(0, 3700);
+    if (project.attributes.description.length == 3700) projectDescription += " [...]";
+
     const projectEmployerJSON = await fetchFreelancehuntJSON(`https://api.freelancehunt.com/v2/employers/${project.attributes.employer.id}`);
     const projectEmployer = projectEmployerJSON.data.attributes;
 
@@ -35,7 +38,7 @@ async function createProjectMessage(project) {
         message += "\n";
         message += "🛠️ "+projectSkills+"\n";
         message += "\n";
-        message += "<blockquote>"+project.attributes.description+"</blockquote>\n";
+        message += "<blockquote>"+projectDescription+"</blockquote>\n";
         message += `<code>`
         message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name}\n`;
         message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}\n`;
