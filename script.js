@@ -127,6 +127,9 @@ async function checkForNewProjects() {
                             ],
                             [
                                 { text: `Bid Analysis`, callback_data: `bid_analysis:${project.id}` }
+                            ],
+                            [
+                                { text: `Not interested`, callback_data: `not_interested` }
                             ]
                         ]
                     }
@@ -336,6 +339,8 @@ bot.on("callback_query", (callbackQuery) => {
     } else if (command == "bid_analysis") {
         const projectId = data;
         bidAnalysis(projectId, projectMessage);
+    } else if (command == "not_interested") {
+        bot.deleteMessage(config.telegram.chatId, projectMessage);
     }
 });
 
