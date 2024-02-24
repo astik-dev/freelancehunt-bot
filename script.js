@@ -40,7 +40,7 @@ async function createProjectMessage(project) {
         message += "\n";
         message += "<blockquote>"+projectDescription+"</blockquote>\n";
         message += `<code>`
-        message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name}\n`;
+        message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name} (${projectEmployer.login})\n`;
         message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}\n`;
         message += `🌐 ${projectEmployer.location.country.name}`;
         message += `</code>\n`;
@@ -117,19 +117,15 @@ async function checkForNewProjects() {
                     reply_markup: {
                         inline_keyboard: [
                             [
-                                { text: 'Open on Freelancehunt', url: project.links.self.web }
+                                { text: `👷 Employer`, url: `https://freelancehunt.com/employer/${projectEmployerLogin}.html` },
+                                { text: '💼 Project', url: project.links.self.web }
                             ],
                             [
-                                { text: `Employer (${projectEmployerLogin})`, url: `https://freelancehunt.com/employer/${projectEmployerLogin}.html` }
+                                { text: `📝 Add Bid`, callback_data: `add_bid:${project.id},${project.attributes?.budget?.currency || "UAH"}` },
+                                { text: `📊 Bid Analysis`, callback_data: `bid_analysis:${project.id}` }
                             ],
                             [
-                                { text: `Add bid`, callback_data: `add_bid:${project.id},${project.attributes?.budget?.currency || "UAH"}` }
-                            ],
-                            [
-                                { text: `Bid Analysis`, callback_data: `bid_analysis:${project.id}` }
-                            ],
-                            [
-                                { text: `Not interested`, callback_data: `not_interested` }
+                                { text: `👎 Not Interested`, callback_data: `not_interested` }
                             ]
                         ]
                     }
