@@ -97,7 +97,7 @@ async function fetchFreelancehuntJSON(link) {
 async function checkForNewProjects() {
     
     try {
-        timeLog("Fetch");
+        timeLog("Checking for new projects");
         
         const responseJSON = await fetchFreelancehuntJSON(`https://api.freelancehunt.com/v2/projects?filter[skill_id]=${config.freelancehunt.skillIds}`);
 
@@ -223,8 +223,9 @@ async function addBid(projectId, projectCurrency, projectMessageId) {
 
             if (!bidResponse.ok) {
                 throw new Error(`HTTP error! Status: ${bidResponse.status}`);
-            } else {
+            } else {    
                 bidResultMessage = "✅ Bid successfully added";
+                timeLog("Bid successfully added");
             }
         } catch (error) {
             timeLog(`Bid error: ${error}`);
@@ -235,6 +236,7 @@ async function addBid(projectId, projectCurrency, projectMessageId) {
             await bot.sendMessage(config.telegram.chatId, `<b>❌ Unknown command</b>`, { parse_mode: 'HTML' });
         }
         bidResultMessage = "❌ Bid addition canceled";
+        timeLog("Bid addition canceled");
     }
 
     await bot.sendMessage(
@@ -312,7 +314,7 @@ async function bidAnalysis(projectId, projectMessageId) {
         message += `<b>Occurrences:</b> ${bidDaysOccurrences}`;
     }
 
-    bot.sendMessage(
+    await bot.sendMessage(
         config.telegram.chatId,
         message,
         {
@@ -320,6 +322,8 @@ async function bidAnalysis(projectId, projectMessageId) {
             reply_to_message_id: projectMessageId,
         }
     );
+
+    timeLog(`Bid analysis`);
 }
 
 
@@ -337,6 +341,7 @@ bot.on("callback_query", (callbackQuery) => {
         bidAnalysis(projectId, projectMessage);
     } else if (command == "not_interested") {
         bot.deleteMessage(config.telegram.chatId, projectMessage);
+        timeLog("Project marked as 'Not Interested', project message deleted");
     }
 });
 
