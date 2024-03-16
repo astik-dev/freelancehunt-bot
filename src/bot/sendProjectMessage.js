@@ -14,8 +14,16 @@ async function createProjectMessage(project) {
     let projectDescription = project.attributes.description.slice(0, 3700);
     if (project.attributes.description.length == 3700) projectDescription += " [...]";
 
-    const projectEmployerJSON = await fetchFreelancehuntJSON(`https://api.freelancehunt.com/v2/employers/${project.attributes.employer.id}`);
-    const projectEmployer = projectEmployerJSON.data.attributes;
+    let projectEmployer = "";
+    try {
+        const projectEmployerJSON = await fetchFreelancehuntJSON(`https://api.freelancehunt.com/v2/employers/${project.attributes.employer.id}`);
+        const employer = projectEmployerJSON.data.attributes;
+        projectEmployer += `👷 ${employer.first_name} ${employer.last_name} (${employer.login})\n`;
+        projectEmployer += `⭐️ ${employer.rating} 👍 ${employer.positive_reviews} 👎 ${employer.negative_reviews} ⚖️ ${employer.arbitrages}\n`;
+        projectEmployer += `🌐 ${employer.location.country.name}`;
+    } catch (error) {
+        projectEmployer = "👷 Employer loading error 🛑";
+    }
 
     const projectPublishedAt = new Date(project.attributes.published_at);
     const projectTime = projectPublishedAt.toLocaleTimeString();
@@ -27,11 +35,7 @@ async function createProjectMessage(project) {
         message += "🛠️ "+projectSkills+"\n";
         message += "\n";
         message += "<blockquote>"+projectDescription+"</blockquote>\n";
-        message += `<code>`
-        message += `👷 ${projectEmployer.first_name} ${projectEmployer.last_name} (${projectEmployer.login})\n`;
-        message += `⭐️ ${projectEmployer.rating} 👍 ${projectEmployer.positive_reviews} 👎 ${projectEmployer.negative_reviews} ⚖️ ${projectEmployer.arbitrages}\n`;
-        message += `🌐 ${projectEmployer.location.country.name}`;
-        message += `</code>\n`;
+        message += `<code>${projectEmployer}</code>\n`
         message += "\n";
         message += "📅 "+projectDate+" | "+projectTime;
     
