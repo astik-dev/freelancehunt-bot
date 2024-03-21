@@ -2,7 +2,7 @@
   "name": "freelancehunt-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
+  "main": "bot.js",
   "scripts": {
     "start": "node bot"
   },
